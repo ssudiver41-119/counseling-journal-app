@@ -2,137 +2,293 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+
+  <!-- ── PWA 기본 ── -->
   <meta name="theme-color" content="#1a5f7a"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="상담일지"/>
-  <meta name="description" content="사회복지 현장을 위한 AI 상담일지 자동생성 앱"/>
   <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
-  <link rel="icon" type="image/png" href="icons/icon-192.png"/>
+
+  <!-- ── iOS Safari 홈화면 설치 ── -->
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="상담일지"/>
+  <meta name="format-detection" content="telephone=no"/>
+
+  <!-- iOS 아이콘 (모든 기기 커버) -->
+  <link rel="apple-touch-icon" href="icons/icon-180.png"/>
+  <link rel="apple-touch-icon" sizes="57x57"   href="icons/icon-57.png"/>
+  <link rel="apple-touch-icon" sizes="60x60"   href="icons/icon-60.png"/>
+  <link rel="apple-touch-icon" sizes="72x72"   href="icons/icon-72.png"/>
+  <link rel="apple-touch-icon" sizes="76x76"   href="icons/icon-76.png"/>
+  <link rel="apple-touch-icon" sizes="114x114" href="icons/icon-114.png"/>
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png"/>
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png"/>
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png"/>
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png"/>
+
+  <!-- iOS 스플래시 (주요 기기) -->
+  <link rel="apple-touch-startup-image" media="(device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3)" href="icons/splash-1170x2532.png"/>
+  <link rel="apple-touch-startup-image" media="(device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3)" href="icons/splash-1284x2778.png"/>
+  <link rel="apple-touch-startup-image" media="(device-width:375px) and (device-height:812px) and (-webkit-device-pixel-ratio:3)" href="icons/splash-1125x2436.png"/>
+  <link rel="apple-touch-startup-image" media="(device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:2)" href="icons/splash-828x1792.png"/>
+  <link rel="apple-touch-startup-image" media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2)" href="icons/splash-750x1334.png"/>
+  <link rel="apple-touch-startup-image" media="(device-width:320px) and (device-height:568px) and (-webkit-device-pixel-ratio:2)" href="icons/splash-640x1136.png"/>
+
+  <!-- Android / 일반 -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png"/>
+
+  <!-- SEO / 공유 -->
+  <meta name="description" content="사회복지 현장을 위한 AI 상담일지 자동생성 앱"/>
+  <meta property="og:title" content="상담일지 자동생성"/>
+  <meta property="og:description" content="사회복지 현장을 위한 AI 상담일지 자동생성 앱"/>
+  <meta property="og:image" content="icons/icon-512.png"/>
+  <meta property="og:type" content="website"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+
   <title>상담일지 자동생성</title>
   <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overscroll-behavior:none}
-body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','Malgun Gothic',sans-serif;background:#f0f4f6;color:#1a1a1a}
-
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html{height:100%;height:-webkit-fill-available}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','Malgun Gothic',sans-serif;
+  background:#f0f4f6;color:#1a1a1a;
+  min-height:100vh;min-height:-webkit-fill-available;
+  overscroll-behavior:none;
+  -webkit-overflow-scrolling:touch;
+}
 :root{
   --p:#1a5f7a;--p2:#134a61;--pl:#e8f4f8;
   --sur:#ffffff;--sur2:#f0f4f6;
   --bdr:#e0e8ec;--bdr2:#c8d8e0;
   --tx:#1a1a1a;--tx2:#6b7f88;
   --r:16px;--rm:10px;
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);
+  --sar:env(safe-area-inset-right,0px);
 }
 
-/* ── LOCK ── */
-.lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#1a5f7a 0%,#0d3a4d 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:32px}
+/* ── LOCK SCREEN ── */
+.lock-screen{
+  position:fixed;inset:0;
+  background:linear-gradient(160deg,#1a5f7a 0%,#0d3a4d 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;padding:32px;
+  padding-top:calc(32px + var(--sat));
+  padding-bottom:calc(32px + var(--sab));
+}
 .lock-screen.hidden{display:none}
-.lock-icon{width:72px;height:72px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px}
-.lock-title{color:#fff;font-size:22px;font-weight:600;margin-bottom:6px}
+.lock-icon{
+  width:80px;height:80px;
+  background:rgba(255,255,255,.15);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:20px;
+}
+.lock-title{color:#fff;font-size:22px;font-weight:700;margin-bottom:8px}
 .lock-sub{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:36px;text-align:center;line-height:1.6}
 .lock-dots{display:flex;gap:14px;margin-bottom:28px}
-.lock-dot{width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,.4);transition:all .2s}
-.lock-dot.filled{background:#fff;border-color:#fff;transform:scale(1.1)}
+.lock-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);transition:all .18s}
+.lock-dot.filled{background:#fff;border-color:#fff;transform:scale(1.15)}
 .lock-dot.error{background:#e74c3c;border-color:#e74c3c;animation:shake .3s}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:256px}
-.pin-btn{height:68px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:24px;font-weight:500;border:1.5px solid rgba(255,255,255,.2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.pin-btn:active{background:rgba(255,255,255,.3);transform:scale(.94)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:260px}
+.pin-btn{
+  height:70px;border-radius:50%;
+  background:rgba(255,255,255,.13);
+  color:#fff;font-size:24px;font-weight:500;
+  border:1.5px solid rgba(255,255,255,.2);
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-user-select:none;user-select:none;
+}
+.pin-btn:active{background:rgba(255,255,255,.32);transform:scale(.93)}
 .pin-btn.del{font-size:18px}
-.lock-msg{color:rgba(255,255,255,.55);font-size:12px;margin-top:18px;height:18px;text-align:center}
-.lock-skip{color:rgba(255,255,255,.4);font-size:12px;margin-top:20px;cursor:pointer;text-decoration:underline}
+.lock-msg{color:rgba(255,255,255,.55);font-size:12px;margin-top:16px;min-height:18px;text-align:center}
+.lock-skip{color:rgba(255,255,255,.4);font-size:12px;margin-top:18px;cursor:pointer;text-decoration:underline}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 
 /* ── LAYOUT ── */
 .app{max-width:480px;margin:0 auto;min-height:100vh;background:#f0f4f6}
 
-.header{background:linear-gradient(135deg,#1a5f7a,#0d3a4d);padding:52px 20px 18px;color:#fff;position:sticky;top:0;z-index:100}
+.header{
+  background:linear-gradient(135deg,#1a5f7a,#0d3a4d);
+  padding-top:calc(52px + var(--sat));
+  padding-bottom:16px;
+  padding-left:calc(20px + var(--sal));
+  padding-right:calc(20px + var(--sar));
+  color:#fff;
+  position:sticky;top:0;z-index:100;
+}
 .header-row{display:flex;justify-content:space-between;align-items:flex-start}
-.header h1{font-size:18px;font-weight:600;margin-bottom:3px}
+.header h1{font-size:18px;font-weight:700;margin-bottom:3px}
 .header-sub{font-size:12px;opacity:.7}
-.icon-btn{background:rgba(255,255,255,.18);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-btn{
+  background:rgba(255,255,255,.18);border:none;border-radius:50%;
+  width:38px;height:38px;color:#fff;font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.icon-btn:active{background:rgba(255,255,255,.32)}
 
-.tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--bdr);padding:0 8px;position:sticky;top:88px;z-index:99}
-.tab{flex:1;text-align:center;padding:12px 4px 11px;font-size:12px;font-weight:500;cursor:pointer;color:var(--tx2);border:none;background:none;border-bottom:2.5px solid transparent;transition:all .2s}
+.tab-bar{
+  display:flex;background:#fff;
+  border-bottom:1px solid var(--bdr);padding:0 8px;
+  position:sticky;top:calc(88px + var(--sat));z-index:99;
+}
+.tab{
+  flex:1;text-align:center;
+  padding:12px 4px 11px;font-size:12px;font-weight:600;
+  cursor:pointer;color:var(--tx2);border:none;background:none;
+  border-bottom:2.5px solid transparent;transition:all .2s;
+}
 .tab.active{color:var(--p);border-bottom-color:var(--p)}
 
-.scroll-body{padding:16px 16px calc(80px + var(--safe-bottom));overflow-y:auto}
+.scroll-body{
+  padding:16px;
+  padding-left:calc(16px + var(--sal));
+  padding-right:calc(16px + var(--sar));
+  padding-bottom:calc(88px + var(--sab));
+}
+
+/* ── INSTALL BANNER ── */
+.install-banner{
+  background:var(--pl);border:1.5px solid var(--p);
+  border-radius:var(--rm);padding:12px 14px;
+  margin-bottom:14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+}
+.install-banner.hidden{display:none}
+.install-text{flex:1;font-size:13px;color:var(--p);font-weight:600;line-height:1.5}
+.install-close{background:none;border:none;color:var(--tx2);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0}
+
+/* ── iOS 설치 안내 ── */
+.ios-guide{
+  background:#fff3cd;border:1.5px solid #f0c040;
+  border-radius:var(--rm);padding:12px 14px;
+  margin-bottom:14px;font-size:13px;color:#7a5a00;line-height:1.6;
+}
+.ios-guide.hidden{display:none}
+.ios-guide-title{font-weight:700;margin-bottom:4px}
 
 /* ── CARDS ── */
-.card{background:var(--sur);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.card{background:var(--sur);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card-title{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--p);flex-shrink:0}
 
 /* ── FORM ── */
-label{display:block;font-size:13px;color:var(--tx2);margin-bottom:5px;margin-top:12px;font-weight:500}
+label{display:block;font-size:13px;color:var(--tx2);margin-bottom:5px;margin-top:12px;font-weight:600}
 label:first-of-type{margin-top:0}
-input,select,textarea{width:100%;font-size:15px;padding:11px 13px;border:1.5px solid var(--bdr);border-radius:var(--rm);background:#fff;color:var(--tx);font-family:inherit;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input,select,textarea{
+  width:100%;font-size:16px;padding:11px 13px;
+  border:1.5px solid var(--bdr);border-radius:var(--rm);
+  background:#fff;color:var(--tx);font-family:inherit;
+  transition:border-color .2s;
+  -webkit-appearance:none;appearance:none;
+}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--p)}
 textarea{resize:vertical;min-height:90px;line-height:1.65}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .chip-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.chip{padding:6px 13px;border-radius:20px;font-size:13px;border:1.5px solid var(--bdr);cursor:pointer;color:var(--tx2);background:#fff;transition:all .15s;font-weight:500}
+.chip{
+  padding:7px 13px;border-radius:20px;font-size:13px;
+  border:1.5px solid var(--bdr);cursor:pointer;
+  color:var(--tx2);background:#fff;transition:all .15s;font-weight:500;
+  -webkit-user-select:none;user-select:none;
+}
 .chip.sel{background:var(--p);color:#fff;border-color:var(--p)}
-.chip:active{transform:scale(.96)}
+.chip:active{transform:scale(.95)}
 
 /* ── GENERATE BUTTON ── */
-.generate-btn{width:100%;padding:15px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(26,95,122,.35);transition:opacity .2s}
+.generate-btn{
+  width:100%;padding:16px;
+  background:var(--p);color:#fff;border:none;
+  border-radius:var(--r);font-size:16px;font-weight:700;
+  cursor:pointer;margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(26,95,122,.4);
+  transition:all .2s;
+  -webkit-user-select:none;user-select:none;
+}
 .generate-btn:active{opacity:.85;transform:scale(.99)}
 .generate-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 
 /* ── RESULT ── */
-.result-box{background:var(--sur2);border-radius:var(--rm);padding:16px;font-size:14px;line-height:1.9;color:var(--tx);white-space:pre-wrap;min-height:120px;border:1px solid var(--bdr)}
-.result-placeholder{color:var(--tx2);font-size:13px;text-align:center;padding:40px 0;line-height:2}
+.result-box{
+  background:var(--sur2);border-radius:var(--rm);padding:16px;
+  font-size:14px;line-height:1.9;color:var(--tx);
+  white-space:pre-wrap;min-height:120px;border:1px solid var(--bdr);
+}
+.result-placeholder{color:var(--tx2);font-size:13px;text-align:center;padding:40px 0;line-height:2.2}
 .action-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
-.btn-sec{padding:11px 6px;background:var(--sur2);border:1.5px solid var(--bdr);border-radius:var(--rm);font-size:12px;font-weight:500;color:var(--tx);cursor:pointer;text-align:center;transition:all .15s}
+.btn-sec{
+  padding:11px 6px;background:var(--sur2);
+  border:1.5px solid var(--bdr);border-radius:var(--rm);
+  font-size:12px;font-weight:600;color:var(--tx);
+  cursor:pointer;text-align:center;transition:all .15s;
+}
 .btn-sec:active{background:var(--bdr)}
 .btn-docx{background:var(--pl);color:var(--p);border-color:var(--p)}
 
 /* ── HISTORY ── */
-.history-item{background:var(--sur);border-radius:var(--r);padding:15px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .15s}
+.history-item{
+  background:var(--sur);border-radius:var(--r);padding:15px;
+  margin-bottom:10px;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);transition:transform .15s;
+}
 .history-item:active{transform:scale(.99)}
 .hi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.hi-name{font-size:15px;font-weight:600}
+.hi-name{font-size:15px;font-weight:700}
 .hi-right{display:flex;align-items:center;gap:6px}
 .hi-date{font-size:11px;color:var(--tx2)}
 .hi-del{background:none;border:none;color:var(--tx2);font-size:16px;cursor:pointer;padding:2px 4px;line-height:1}
 .hi-preview{font-size:13px;color:var(--tx2);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.hi-tag{display:inline-block;background:var(--pl);color:var(--p);font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;margin-top:8px}
+.hi-tag{display:inline-block;background:var(--pl);color:var(--p);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;margin-top:8px}
 
 /* ── SETTINGS MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.52);
+  z-index:1000;display:flex;align-items:flex-end;justify-content:center;
+}
 .modal-overlay.hidden{display:none}
-.modal{background:#fff;border-radius:24px 24px 0 0;padding:20px 20px calc(24px + var(--safe-bottom));width:100%;max-width:480px;animation:slideUp .28s ease;max-height:90vh;overflow-y:auto}
+.modal{
+  background:#fff;border-radius:24px 24px 0 0;
+  padding:20px 20px calc(24px + var(--sab));
+  width:100%;max-width:480px;
+  animation:slideUp .28s ease;max-height:90vh;overflow-y:auto;
+  padding-left:calc(20px + var(--sal));
+  padding-right:calc(20px + var(--sar));
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px}
 .modal-title{font-size:17px;font-weight:700;margin-bottom:20px}
 .setting-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--bdr)}
-.setting-label{font-size:14px;font-weight:500}
+.setting-label{font-size:14px;font-weight:600}
 .setting-sub{font-size:12px;color:var(--tx2);margin-top:3px}
-.toggle{width:48px;height:27px;background:#ddd;border-radius:14px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle{width:50px;height:28px;background:#ddd;border-radius:14px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
 .toggle.on{background:var(--p)}
-.toggle::after{content:'';position:absolute;width:21px;height:21px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.toggle.on::after{transform:translateX(21px)}
-.modal-btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:var(--rm);font-size:15px;font-weight:600;cursor:pointer;margin-top:16px}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle.on::after{transform:translateX(22px)}
+.modal-btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:var(--rm);font-size:15px;font-weight:700;cursor:pointer;margin-top:12px}
+.modal-btn:active{opacity:.85}
 .modal-btn.danger{background:#e74c3c}
 .modal-btn.ghost{background:#fff;color:var(--tx2);border:1.5px solid var(--bdr)}
 
 /* ── MISC ── */
 .spinner{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:calc(80px + var(--safe-bottom) + 12px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 22px;border-radius:22px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9000;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast{
+  position:fixed;
+  bottom:calc(80px + var(--sab) + 12px);
+  left:50%;transform:translateX(-50%);
+  background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:22px;
+  font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;
+  pointer-events:none;z-index:9000;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);
+}
 .toast.show{opacity:1}
-.empty-state{text-align:center;padding:60px 20px;color:var(--tx2);font-size:14px;line-height:2}
-.empty-icon{font-size:40px;margin-bottom:12px;display:block}
+.empty-state{text-align:center;padding:60px 20px;color:var(--tx2);font-size:14px;line-height:2.2}
+.empty-icon{font-size:44px;margin-bottom:12px;display:block}
 .section{display:none}
 .section.active{display:block}
-
-/* ── INSTALL BANNER ── */
-.install-banner{background:var(--pl);border:1.5px solid var(--p);border-radius:var(--rm);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer}
-.install-banner.hidden{display:none}
-.install-text{flex:1;font-size:13px;color:var(--p);font-weight:500;line-height:1.5}
-.install-close{background:none;border:none;color:var(--tx2);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0}
   </style>
 </head>
 <body>
@@ -156,7 +312,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
     <button class="pin-btn" onclick="pinInput('7')">7</button>
     <button class="pin-btn" onclick="pinInput('8')">8</button>
     <button class="pin-btn" onclick="pinInput('9')">9</button>
-    <button class="pin-btn" onclick="pinInput('0')" style="grid-column:2">0</button>
+    <button class="pin-btn" style="grid-column:2" onclick="pinInput('0')">0</button>
     <button class="pin-btn del" onclick="pinDel()">⌫</button>
   </div>
   <div class="lock-msg" id="lockMsg"></div>
@@ -171,7 +327,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
         <h1>상담일지 자동생성</h1>
         <div class="header-sub" id="headerOrg">119복지인권연구소</div>
       </div>
-      <button class="icon-btn" onclick="openSettings()" aria-label="설정">⚙</button>
+      <button class="icon-btn" onclick="openSettings()">⚙</button>
     </div>
   </div>
 
@@ -181,12 +337,24 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
     <button class="tab" onclick="switchTab('history')">🗂 목록</button>
   </div>
 
-  <!-- ── 작성 탭 ── -->
+  <!-- 작성 탭 -->
   <div id="tab-write" class="section active scroll-body">
+
+    <!-- Android 설치 배너 -->
     <div class="install-banner hidden" id="installBanner" onclick="installPWA()">
-      <span>📲</span>
+      <span style="font-size:20px">📲</span>
       <div class="install-text">홈화면에 추가하면 앱처럼 사용할 수 있어요!</div>
       <button class="install-close" onclick="dismissInstall(event)">✕</button>
+    </div>
+
+    <!-- iOS 설치 안내 -->
+    <div class="ios-guide hidden" id="iosGuide">
+      <div class="ios-guide-title">📱 iPhone 홈화면에 추가하기</div>
+      Safari 하단 <strong>공유 버튼(□↑)</strong> 탭 →<br>
+      <strong>홈 화면에 추가</strong> 선택 → <strong>추가</strong> 탭
+      <div style="margin-top:8px;text-align:right">
+        <span style="font-size:12px;cursor:pointer;color:var(--p);font-weight:600" onclick="dismissIosGuide()">닫기</span>
+      </div>
     </div>
 
     <div class="card">
@@ -194,12 +362,8 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
       <label>상담 날짜</label>
       <input type="date" id="date"/>
       <div class="row2">
-        <div>
-          <label>내담자 이름/코드</label>
-          <input type="text" id="client" placeholder="예: 김○○ / C-001"/>
-        </div>
-        <div>
-          <label>상담 유형</label>
+        <div><label>내담자 이름/코드</label><input type="text" id="client" placeholder="예: 김○○ / C-001" autocomplete="off"/></div>
+        <div><label>상담 유형</label>
           <select id="ctype">
             <option>개인상담</option><option>가족상담</option><option>위기상담</option>
             <option>사례관리</option><option>전화상담</option><option>방문상담</option><option>집단상담</option>
@@ -233,7 +397,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
 
     <div class="card">
       <div class="card-title"><span class="dot"></span>상담 내용 메모</div>
-      <textarea id="memo" placeholder="키워드나 짧은 문장으로 입력하세요&#10;예: 남편과 갈등, 생활비 부족, 아이 학교 문제. 지난주보다 표정 어두움. 서비스 연계 요청함." rows="5"></textarea>
+      <textarea id="memo" placeholder="키워드나 짧은 문장으로 입력하세요&#10;예: 남편과 갈등, 생활비 부족, 아이 학교 문제. 지난주보다 표정 어두움." rows="5"></textarea>
     </div>
 
     <div class="card">
@@ -269,18 +433,18 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
     </button>
   </div>
 
-  <!-- ── 결과 탭 ── -->
+  <!-- 결과 탭 -->
   <div id="tab-result" class="section scroll-body">
     <div class="card">
       <div class="card-title"><span class="dot"></span>생성된 상담일지</div>
       <div class="result-box" id="result-content">
         <div class="result-placeholder">
-          <span>📝</span><br>
+          📝<br><br>
           아직 생성된 상담일지가 없습니다.<br>
           새 일지 탭에서 정보를 입력하고<br>생성 버튼을 눌러주세요.
         </div>
       </div>
-      <div class="action-row" style="margin-top:12px">
+      <div class="action-row">
         <button class="btn-sec" onclick="copyResult()">📋 복사</button>
         <button class="btn-sec" onclick="saveResult()">💾 저장</button>
         <button class="btn-sec btn-docx" onclick="exportDocx()">📄 DOCX</button>
@@ -288,7 +452,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
     </div>
   </div>
 
-  <!-- ── 목록 탭 ── -->
+  <!-- 목록 탭 -->
   <div id="tab-history" class="section scroll-body">
     <div id="history-list">
       <div class="empty-state">
@@ -305,14 +469,13 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">⚙ 앱 설정</div>
-
     <label style="margin-top:0">기관명</label>
-    <input type="text" id="set-org" placeholder="예: 119복지인권연구소"/>
+    <input type="text" id="set-org" placeholder="예: 119복지인권연구소" autocomplete="organization"/>
     <label>상담사 이름</label>
-    <input type="text" id="set-name" placeholder="예: 이대영 사회복지사"/>
+    <input type="text" id="set-name" placeholder="예: 이대영 사회복지사" autocomplete="name"/>
 
     <div style="margin-top:22px">
-      <div class="card-title" style="margin-bottom:0"><span class="dot"></span>보안 설정</div>
+      <div class="card-title"><span class="dot"></span>보안 설정</div>
       <div class="setting-row">
         <div>
           <div class="setting-label">PIN 잠금 사용</div>
@@ -322,19 +485,19 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
       </div>
       <div id="pinChangeWrap" style="display:none;padding-top:12px">
         <label>새 PIN 4자리 설정</label>
-        <input type="password" id="newPin" maxlength="4" inputmode="numeric" placeholder="새 PIN 4자리 입력" style="letter-spacing:8px;text-align:center;font-size:22px"/>
-        <button class="modal-btn" onclick="savePin()" style="margin-top:10px;background:#134a61">PIN 저장</button>
+        <input type="password" id="newPin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="새 PIN 4자리 입력" style="letter-spacing:8px;text-align:center;font-size:22px"/>
+        <button class="modal-btn" onclick="savePin()" style="background:#134a61;margin-top:8px">PIN 저장</button>
       </div>
     </div>
 
     <div style="margin-top:22px">
-      <div class="card-title" style="margin-bottom:0"><span class="dot"></span>데이터 관리</div>
+      <div class="card-title"><span class="dot"></span>데이터 관리</div>
       <div class="setting-row" style="border-bottom:none">
         <div>
           <div class="setting-label">저장된 일지 전체 삭제</div>
           <div class="setting-sub">복구할 수 없습니다</div>
         </div>
-        <button class="btn-sec" onclick="clearAll()" style="padding:7px 12px;font-size:12px;border-radius:8px;color:#e74c3c;border-color:#e74c3c;background:#fff5f5">삭제</button>
+        <button class="btn-sec" onclick="clearAll()" style="padding:7px 12px;font-size:12px;border-radius:8px;color:#e74c3c;border-color:#e74c3c;background:#fff5f5;white-space:nowrap">삭제</button>
       </div>
     </div>
 
@@ -345,29 +508,39 @@ textarea{resize:vertical;min-height:90px;line-height:1.65}
 
 <div class="toast" id="toast"></div>
 
-<!-- DOCX 라이브러리 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 <script>
 // ── STATE ──
 let settings={org:'119복지인권연구소',name:'',lockEnabled:false,pin:'1234'};
-let currentResult='';
-let currentMeta={};
+let currentResult='',currentMeta={};
 let savedList=[];
-let pinBuffer='';
-let pinAttempts=0;
+let pinBuffer='',pinAttempts=0;
 let deferredPrompt=null;
 
 // ── INIT ──
-(function init(){
+(function(){
   try{const s=localStorage.getItem('cwSettings');if(s)settings={...settings,...JSON.parse(s)};}catch(e){}
   try{const h=localStorage.getItem('cwHistory');if(h)savedList=JSON.parse(h);}catch(e){}
   document.getElementById('date').value=new Date().toISOString().split('T')[0];
   applySettings();
   if(settings.lockEnabled)showLock();
-  // PWA install prompt
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.remove('hidden');});
-  // Service worker
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // Android PWA 설치 프롬프트
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();deferredPrompt=e;
+    document.getElementById('installBanner').classList.remove('hidden');
+  });
+  // iOS 감지 (Safari, 미설치 상태)
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  const isStandalone=window.navigator.standalone===true;
+  const isSafari=/Safari/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent);
+  if(isIOS&&!isStandalone&&isSafari){
+    const dismissed=localStorage.getItem('iosGuideDismissed');
+    if(!dismissed)document.getElementById('iosGuide').classList.remove('hidden');
+  }
+  // Service Worker 등록
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
 })();
 
 function applySettings(){
@@ -396,25 +569,24 @@ function checkPin(){
   else{
     pinAttempts++;
     for(let i=0;i<4;i++)document.getElementById('d'+i).classList.add('error');
-    document.getElementById('lockMsg').textContent=`잘못된 PIN입니다. (${pinAttempts}회 오류)`;
-    pinBuffer='';setTimeout(()=>updateDots(),700);
+    document.getElementById('lockMsg').textContent=`잘못된 PIN (${pinAttempts}회 오류)`;
+    pinBuffer='';setTimeout(updateDots,700);
   }
 }
 
 // ── TABS ──
-function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['write','result','history'][i]===tab));
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['write','result','history'][i]===t));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  if(tab==='history')renderHistory();
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='history')renderHistory();
 }
 function toggleChip(el){el.classList.toggle('sel');}
 function getChips(id){return[...document.querySelectorAll('#'+id+' .chip.sel')].map(c=>c.textContent).join(', ');}
 
 // ── GENERATE ──
 async function generateJournal(){
-  const btn=document.getElementById('gen-btn');
-  const btnText=document.getElementById('btn-text');
+  const btn=document.getElementById('gen-btn'),btnText=document.getElementById('btn-text');
   const date=document.getElementById('date').value;
   const client=document.getElementById('client').value||'내담자';
   const ctype=document.getElementById('ctype').value;
@@ -426,47 +598,47 @@ async function generateJournal(){
   const methods=getChips('method-chips');
   const next=document.getElementById('next').value;
   const style=document.getElementById('style').value;
-  if(!memo.trim()&&!topics.trim()){showToast('상담 내용 메모 또는 주제를 입력해주세요');return;}
-  const styleGuide={
-    standard:'SOAP 형식(Subjective/Objective/Assessment/Plan 각 항목을 명확히 구분하여)으로 작성하세요.',
-    narrative:'서술형 문장으로 자연스럽게 흐르는 상담일지로 작성하세요.',
+  if(!memo.trim()&&!topics.trim()){showToast('상담 내용 또는 주제를 입력해주세요');return;}
+  const styleMap={
+    standard:'SOAP 형식(Subjective/Objective/Assessment/Plan)으로 항목을 명확히 구분하여 작성하세요.',
+    narrative:'서술형 문장으로 자연스럽게 작성하세요.',
     simple:'핵심 내용만 간결하게 요점 중심으로 작성하세요.',
     detail:'각 항목을 상세하고 체계적으로 풍부하게 작성하세요.'
-  }[style];
+  };
   btn.disabled=true;btnText.innerHTML='<span class="spinner"></span> AI가 작성 중...';
   currentMeta={date,client,ctype,duration,session,topics,goal,methods,next,org:settings.org,counselor:settings.name};
-  const prompt=`당신은 사회복지 상담일지 작성 전문가입니다. 아래 정보를 바탕으로 전문적인 사회복지 상담일지를 작성해주세요.\n\n[상담 정보]\n- 상담일자: ${date}\n- 기관명: ${settings.org||'(미설정)'}\n- 상담사: ${settings.name||'(미설정)'}\n- 내담자: ${client}\n- 상담유형: ${ctype}\n- 상담시간: ${duration}\n- 회기: ${session}\n- 주요 호소 문제: ${topics||'(미입력)'}\n- 상담 메모: ${memo||'(미입력)'}\n- 상담 목표: ${goal||'(미입력)'}\n- 개입 방법: ${methods||'(미입력)'}\n- 다음 계획: ${next||'(미입력)'}\n\n[작성 지침]\n${styleGuide}\n- 전문적이고 객관적인 사회복지 용어를 사용하세요.\n- 내담자의 강점과 자원을 언급하세요.\n- 윤리적이고 인권 감수성을 갖춘 표현을 사용하세요.\n- 한국어로 작성하세요.\n- 마크다운 기호(**, #, * 등) 없이 순수 텍스트로 작성하세요.`;
+  const prompt=`당신은 사회복지 상담일지 작성 전문가입니다. 아래 정보를 바탕으로 전문적인 사회복지 상담일지를 작성해주세요.\n\n[상담 정보]\n- 상담일자: ${date}\n- 기관명: ${settings.org||'(미설정)'}\n- 상담사: ${settings.name||'(미설정)'}\n- 내담자: ${client}\n- 상담유형: ${ctype}\n- 상담시간: ${duration}\n- 회기: ${session}\n- 주요 호소 문제: ${topics||'(미입력)'}\n- 상담 메모: ${memo||'(미입력)'}\n- 상담 목표: ${goal||'(미입력)'}\n- 개입 방법: ${methods||'(미입력)'}\n- 다음 계획: ${next||'(미입력)'}\n\n[작성 지침]\n${styleMap[style]}\n전문적이고 객관적인 사회복지 용어를 사용하세요. 내담자의 강점과 자원을 언급하세요. 윤리적이고 인권 감수성을 갖춘 표현을 사용하세요. 한국어로 작성하고, 마크다운 기호(**, #, * 등) 없이 순수 텍스트로 작성하세요.`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
-    });
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})});
     const data=await res.json();
-    const text=data.content?.map(c=>c.text||'').join('')||'생성에 실패했습니다.';
+    if(!res.ok) throw new Error(data.error||'생성 실패');
+    const text=data.text||'생성에 실패했습니다.';
     currentResult=text;
     document.getElementById('result-content').textContent=text;
-    switchTab('result');
-    showToast('상담일지가 생성되었습니다 ✓');
-  }catch(e){showToast('오류가 발생했습니다. 다시 시도해주세요.');}
+    switchTab('result');showToast('상담일지가 생성되었습니다 ✓');
+  }catch(e){showToast('오류: '+e.message);}
   finally{btn.disabled=false;btnText.textContent='✨ AI로 상담일지 생성하기';}
 }
 
 // ── COPY ──
 function copyResult(){
   if(!currentResult){showToast('생성된 내용이 없습니다');return;}
-  navigator.clipboard.writeText(currentResult).catch(()=>{
-    const t=document.createElement('textarea');t.value=currentResult;
-    document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
-  });
-  showToast('클립보드에 복사되었습니다');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(currentResult).then(()=>showToast('클립보드에 복사되었습니다'));
+  }else{
+    const ta=document.createElement('textarea');ta.value=currentResult;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');showToast('클립보드에 복사되었습니다');}catch(e){showToast('복사 실패 — 직접 선택 후 복사하세요');}
+    document.body.removeChild(ta);
+  }
 }
 
 // ── SAVE ──
 function saveResult(){
   if(!currentResult){showToast('저장할 내용이 없습니다');return;}
   savedList.unshift({...currentMeta,content:currentResult,id:Date.now()});
-  localStorage.setItem('cwHistory',JSON.stringify(savedList));
+  try{localStorage.setItem('cwHistory',JSON.stringify(savedList));}catch(e){showToast('저장 공간이 부족합니다');}
   showToast('저장되었습니다 ✓');
 }
 
@@ -476,19 +648,18 @@ async function exportDocx(){
   if(typeof docx==='undefined'){showToast('라이브러리 로딩 중...');return;}
   showToast('DOCX 파일 생성 중...');
   try{
-    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,AlignmentType,BorderStyle,WidthType,ShadingType}=docx;
+    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,AlignmentType,BorderStyle,WidthType}=docx;
     const m=currentMeta;
-    const border={style:BorderStyle.SINGLE,size:1,color:'CCCCCC'};
-    const borders={top:border,bottom:border,left:border,right:border};
-    const cell=(size,text,bold=false)=>new TableCell({borders,width:{size,type:WidthType.DXA},
+    const bd={style:BorderStyle.SINGLE,size:1,color:'CCCCCC'};
+    const borders={top:bd,bottom:bd,left:bd,right:bd};
+    const cell=(sz,txt,bold=false)=>new TableCell({borders,width:{size:sz,type:WidthType.DXA},
       margins:{top:80,bottom:80,left:120,right:120},
-      children:[new Paragraph({children:[new TextRun({text:String(text||''),bold,size:22,font:'Malgun Gothic'})]})]
-    });
-    const infoRows=[
+      children:[new Paragraph({children:[new TextRun({text:String(txt||''),bold,size:22,font:'Malgun Gothic'})]})]});
+    const rows=[
       ['상담일자',m.date||''],['기관명',m.org||''],['상담사',m.counselor||''],
       ['내담자',m.client||''],['상담유형',m.ctype||''],['상담시간',m.duration||''],['상담회기',m.session||''],
     ];
-    const doc=new Document({
+    const doc2=new Document({
       styles:{default:{document:{run:{font:'Malgun Gothic',size:22}}}},
       sections:[{
         properties:{page:{size:{width:11906,height:16838},margin:{top:1440,right:1440,bottom:1440,left:1440}}},
@@ -497,29 +668,27 @@ async function exportDocx(){
             children:[new TextRun({text:'상  담  일  지',bold:true,size:40,font:'Malgun Gothic',color:'1a5f7a'})]}),
           new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:480},
             children:[new TextRun({text:m.org||'',size:22,font:'Malgun Gothic',color:'888888'})]}),
-          new Table({
-            width:{size:9026,type:WidthType.DXA},columnWidths:[2400,6626],
-            rows:infoRows.map(([k,v])=>new TableRow({children:[cell(2400,k,true),cell(6626,v)]}))
-          }),
+          new Table({width:{size:9026,type:WidthType.DXA},columnWidths:[2400,6626],
+            rows:rows.map(([k,v])=>new TableRow({children:[cell(2400,k,true),cell(6626,v)]}))}),
           new Paragraph({spacing:{before:520,after:180},
             border:{bottom:{style:BorderStyle.SINGLE,size:8,color:'1a5f7a',space:1}},
             children:[new TextRun({text:'상 담 내 용',bold:true,size:28,font:'Malgun Gothic',color:'1a5f7a'})]}),
           ...currentResult.split('\n').map(line=>
             new Paragraph({spacing:{before:80,after:80,line:340},
-              children:[new TextRun({text:line,size:22,font:'Malgun Gothic'})]})
-          ),
+              children:[new TextRun({text:line,size:22,font:'Malgun Gothic'})]})),
           new Paragraph({spacing:{before:600,after:0},
             border:{top:{style:BorderStyle.SINGLE,size:4,color:'CCCCCC',space:1}},
             children:[new TextRun({text:`작성일: ${new Date().toLocaleDateString('ko-KR')}    상담사 서명: _______________`,size:20,font:'Malgun Gothic',color:'888888'})]}),
         ]
       }]
     });
-    const buffer=await Packer.toBuffer(doc);
+    const buffer=await Packer.toBuffer(doc2);
     const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;a.download=`상담일지_${m.client||'내담자'}_${m.date||''}.docx`;
-    a.click();URL.revokeObjectURL(url);
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     showToast('DOCX 다운로드 완료 ✓');
   }catch(e){console.error(e);showToast('DOCX 생성 중 오류가 발생했습니다');}
 }
@@ -527,7 +696,7 @@ async function exportDocx(){
 // ── HISTORY ──
 function renderHistory(){
   const el=document.getElementById('history-list');
-  if(!savedList.length){el.innerHTML='<div class="empty-state"><span class="empty-icon">🗂</span>저장된 상담일지가 없습니다.<br>생성 후 저장하면 여기에 나타납니다.</div>';return;}
+  if(!savedList.length){el.innerHTML='<div class="empty-state"><span class="empty-icon">🗂</span>저장된 상담일지가 없습니다.</div>';return;}
   el.innerHTML=savedList.map(item=>`
     <div class="history-item" onclick="viewHistory(${item.id})">
       <div class="hi-top">
@@ -566,8 +735,7 @@ function openSettings(){
 function closeSettings(){document.getElementById('settingsModal').classList.add('hidden');}
 function closeSettingsOutside(e){if(e.target.id==='settingsModal')closeSettings();}
 function toggleLock(){
-  const tog=document.getElementById('lockToggle');
-  const on=!tog.classList.contains('on');
+  const tog=document.getElementById('lockToggle'),on=!tog.classList.contains('on');
   tog.classList.toggle('on',on);
   document.getElementById('pinChangeWrap').style.display=on?'block':'none';
 }
@@ -594,6 +762,10 @@ function installPWA(){
   if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').classList.add('hidden');});}
 }
 function dismissInstall(e){e.stopPropagation();document.getElementById('installBanner').classList.add('hidden');}
+function dismissIosGuide(){
+  document.getElementById('iosGuide').classList.add('hidden');
+  localStorage.setItem('iosGuideDismissed','1');
+}
 
 // ── TOAST ──
 function showToast(msg){
