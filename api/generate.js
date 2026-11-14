@@ -231,10 +231,16 @@ function resolveMaxTokens(body, cfg) {
 }
 
 // ── 업스트림 호출 ─────────────────────────────────────
+const SYSTEM_PROMPT =
+  '너는 한국어 상담일지를 쓰는 문서 작성 도구다. ' +
+  '출력은 순수 일반 텍스트로만 작성한다. 마크다운 서식 기호(**, ##, #, *, _, 백틱, ~~, >, |)는 절대 쓰지 않는다. ' +
+  '소제목은 "제목:" 처럼 콜론으로 끝내고, 목록은 번호(1., 2.)나 줄바꿈으로만 구분한다.';
+
 function upstreamPayload(model, maxTokens, prompt) {
   const body = {
     model,
     max_tokens: maxTokens,
+    system: SYSTEM_PROMPT,
     messages: [{ role: 'user', content: prompt }]
   };
   // Claude Sonnet 5.5 계열은 '사고(thinking)'가 기본으로 켜져 있어 지연·토큰이 늘어난다.

@@ -1,6 +1,6 @@
 // api/generate.js 핸들러 단위 테스트 (의존성 없음)
 //
-//   실행:  node --test tests/
+//   실행:  node --test   (tests/ 의 test 파일을 자동으로 찾는다)
 //
 // 저장소에는 package.json 이 없어 api/generate.js 가 ESM(.js)로 취급되지 않으므로,
 // 테스트에서는 파일을 임시 .mjs 로 복사해 동적 import 한다(코드는 그대로 실행됨).
@@ -109,6 +109,22 @@ test('같은 오리진 브라우저 요청은 통과하고 모델은 서버가 �
   assert.equal(upstreamCalls[0].url, 'https://api.anthropic.com/v1/messages');
   assert.equal(upstreamCalls[0].init.headers['x-api-key'], 'sk-ant-test');
   assert.equal(res.headers['cache-control'], 'no-store');
+});
+
+test('업스트림 요청에 마크다운 서식 금지 시스템 지침이 함께 실린다', async () => {
+  setEnv();
+  stubFetch();
+  const res = makeRes();
+  await handler(makeReq({ ip: freshIp() }), res);
+
+  assert.equal(res.statusCode, 200);
+  const system = upstreamCalls[0].body.system;
+  assert.equal(typeof system, 'string');
+  assert.match(system, /마크다운 서식 기호/);
+  assert.match(system, /절대 쓰지 않는다/);
+  // 사용자 프롬프트(상담 메모)는 그대로 user 메시지로만 가고 시스템 지침에 섞이지 않는다.
+  assert.equal(upstreamCalls[0].body.messages.length, 1);
+  assert.equal(upstreamCalls[0].body.messages[0].content, '상담 메모');
 });
 
 test('허용되지 않은 Origin 은 403 으로 막고 CORS 헤더를 주지 않는다', async () => {

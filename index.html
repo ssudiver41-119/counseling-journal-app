@@ -522,11 +522,25 @@ let savedList=[];
 let pinBuffer='',pinAttempts=0;
 let deferredPrompt=null;
 
+// 한국(KST) 기준 오늘 날짜 YYYY-MM-DD — 기기 시간대가 달라도 새벽에도 한국 날짜가 뜨게 한다.
+function todayKST(){
+  const now=new Date();
+  try{
+    const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+    const pick=t=>{const p=parts.find(x=>x.type===t);return p?p.value:'';};
+    const y=pick('year'),m=pick('month'),d=pick('day');
+    if(y&&m&&d)return `${y}-${m}-${d}`;
+  }catch(e){}
+  // Intl 미지원 환경 폴백: UTC+9 고정 계산
+  const kst=new Date(now.getTime()+9*60*60*1000);
+  return `${kst.getUTCFullYear()}-${String(kst.getUTCMonth()+1).padStart(2,'0')}-${String(kst.getUTCDate()).padStart(2,'0')}`;
+}
+
 // ── INIT ──
 (function(){
   try{const s=localStorage.getItem('cwSettings');if(s)settings={...settings,...JSON.parse(s)};}catch(e){}
   try{const h=localStorage.getItem('cwHistory');if(h)savedList=JSON.parse(h);}catch(e){}
-  document.getElementById('date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('date').value=todayKST();
   applySettings();
   if(settings.lockEnabled)showLock();
   // Android PWA 설치 프롬프트
@@ -612,7 +626,7 @@ async function generateJournal(){
   };
   btn.disabled=true;btnText.innerHTML='<span class="spinner"></span> AI가 작성 중...';
   currentMeta={date,client,ctype,duration,session,topics,goal,methods,next,org:settings.org,counselor:settings.name};
-  const prompt=`당신은 사회복지 상담일지 작성 전문가입니다. 아래 정보를 바탕으로 전문적인 사회복지 상담일지를 작성해주세요.\n\n[상담 정보]\n- 상담일자: ${date}\n- 기관명: ${settings.org||'(미설정)'}\n- 상담사: ${settings.name||'(미설정)'}\n- 내담자: ${client}\n- 상담유형: ${ctype}\n- 상담시간: ${duration}\n- 회기: ${session}\n- 주요 호소 문제: ${topics||'(미입력)'}\n- 상담 메모: ${memo||'(미입력)'}\n- 상담 목표: ${goal||'(미입력)'}\n- 개입 방법: ${methods||'(미입력)'}\n- 다음 계획: ${next||'(미입력)'}\n\n[작성 지침]\n${styleMap[style]}\n전문적이고 객관적인 사회복지 용어를 사용하세요. 내담자의 강점과 자원을 언급하세요. 윤리적이고 인권 감수성을 갖춘 표현을 사용하세요. 한국어로 작성하고, 마크다운 기호(**, #, * 등) 없이 순수 텍스트로 작성하세요.`;
+  const prompt=`당신은 사회복지 상담일지 작성 전문가입니다. 아래 정보를 바탕으로 전문적인 사회복지 상담일지를 작성해주세요.\n\n[상담 정보]\n- 상담일자: ${date}\n- 기관명: ${settings.org||'(미설정)'}\n- 상담사: ${settings.name||'(미설정)'}\n- 내담자: ${client}\n- 상담유형: ${ctype}\n- 상담시간: ${duration}\n- 회기: ${session}\n- 주요 호소 문제: ${topics||'(미입력)'}\n- 상담 메모: ${memo||'(미입력)'}\n- 상담 목표: ${goal||'(미입력)'}\n- 개입 방법: ${methods||'(미입력)'}\n- 다음 계획: ${next||'(미입력)'}\n\n[작성 지침]\n${styleMap[style]}\n전문적이고 객관적인 사회복지 용어를 사용하세요. 내담자의 강점과 자원을 언급하세요. 윤리적이고 인권 감수성을 갖춘 표현을 사용하세요. 한국어로 작성하고, 마크다운 서식 기호(**, ##, #, *, _, 백틱(\`), ~~, >, | 등)는 절대 쓰지 마세요. 소제목은 '제목:' 처럼 콜론으로 끝내고, 목록은 번호(1., 2.)나 줄바꿈으로만 구분한 순수 일반 텍스트로 작성하세요.`;
   try{
     const headers={'Content-Type':'application/json'};
     if(settings.accessCode)headers['x-app-code']=settings.accessCode;

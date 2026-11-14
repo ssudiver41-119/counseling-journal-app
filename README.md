@@ -108,8 +108,11 @@ counseling-journal-app/
 ### 테스트
 
 ```bash
-node --test tests/api-generate.test.mjs
+node --test
 ```
+
+- `tests/api-generate.test.mjs` — 서버 함수(보안·입력 검증·업스트림 요청 형태)
+- `tests/index-html.test.mjs` — 화면 코드(상담 날짜 KST 기본값, 마크다운 금지 지침)
 
 ### 알아둘 점
 
