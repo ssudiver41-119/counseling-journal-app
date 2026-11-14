@@ -16,7 +16,7 @@ const UPSTREAM_TIMEOUT_MS = 25000;
 
 const MIN_MAX_TOKENS = 256;
 const HARD_MAX_TOKENS = 4000;
-const DEFAULT_MAX_TOKENS = 1200;
+const DEFAULT_MAX_TOKENS = 2000; // SOAP 표준형 일지 한 편이 1,200토큰에서 잘리던 문제 보정
 
 // ── 설정 ──────────────────────────────────────────────
 function toInt(value, fallback, min, max) {
@@ -363,5 +363,6 @@ export default async function handler(req, res) {
     return res.status(502).json({ error: '생성 결과가 비어 있습니다. 다시 시도해 주세요.' });
   }
 
-  return res.status(200).json({ text });
+  // 응답이 토큰 상한에 걸려 잘렸는지 알려 준다(사용자가 다시 생성할지 판단할 수 있게).
+  return res.status(200).json({ text, truncated: (data && data.stop_reason) === 'max_tokens' });
 }

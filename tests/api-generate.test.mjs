@@ -100,6 +100,7 @@ test('같은 오리진 브라우저 요청은 통과하고 모델은 서버가 �
 
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.text, '생성된 일지');
+  assert.equal(res.body.truncated, false);
   assert.equal(upstreamCalls.length, 1);
   const sent = upstreamCalls[0].body;
   assert.equal(sent.model, 'claude-sonnet-5-5');
@@ -305,6 +306,15 @@ test('업스트림 오류 상세는 노출하지 않고 상태 코드만 매핑�
   const busy = makeRes();
   await handler(makeReq({ ip: freshIp() }), busy);
   assert.equal(busy.statusCode, 429);
+});
+
+test('토큰 상한으로 잘리면 truncated 표시를 돌려준다', async () => {
+  setEnv();
+  stubFetch({ status: 200, payload: { content: [{ type: 'text', text: '잘린 일지' }], stop_reason: 'max_tokens' } });
+  const res = makeRes();
+  await handler(makeReq({ ip: freshIp() }), res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.truncated, true);
 });
 
 test('업스트림 응답이 비어 있으면 502', async () => {

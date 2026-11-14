@@ -628,7 +628,9 @@ async function generateJournal(){
     const text=data.text||'생성에 실패했습니다.';
     currentResult=text;
     document.getElementById('result-content').textContent=text;
-    switchTab('result');showToast('상담일지가 생성되었습니다 ✓');
+    switchTab('result');
+    if(data.truncated)showToast('분량이 길어 뒷부분이 잘렸습니다 — 간결형으로 다시 생성해 보세요');
+    else showToast('상담일지가 생성되었습니다 ✓');
   }catch(e){showToast('오류: '+e.message);}
   finally{btn.disabled=false;btnText.textContent='✨ AI로 상담일지 생성하기';}
 }
